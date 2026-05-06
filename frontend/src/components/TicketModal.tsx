@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { Ticket, TicketStatus } from '../types'
+import type { Ticket, TicketStatus, Priority } from '../types'
 
 const STATUS_OPTIONS: { value: TicketStatus; label: string }[] = [
   { value: 'todo',        label: 'Todo' },
@@ -7,23 +7,37 @@ const STATUS_OPTIONS: { value: TicketStatus; label: string }[] = [
   { value: 'done',        label: 'Done' },
 ]
 
+const PRIORITY_OPTIONS: { value: Priority; label: string }[] = [
+  { value: 'low',    label: 'Low' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'high',   label: 'High' },
+]
+
+interface SaveData {
+  title: string
+  description: string
+  status: TicketStatus
+  priority: Priority
+}
+
 interface Props {
   ticket?: Ticket
   initialStatus?: TicketStatus
-  onSave: (data: { title: string; description: string; status: TicketStatus }) => void
+  onSave: (data: SaveData) => void
   onDelete?: () => void
   onClose: () => void
 }
 
 export default function TicketModal({ ticket, initialStatus = 'todo', onSave, onDelete, onClose }: Props) {
-  const [title, setTitle] = useState(ticket?.title ?? '')
+  const [title, setTitle]           = useState(ticket?.title ?? '')
   const [description, setDescription] = useState(ticket?.description ?? '')
-  const [status, setStatus] = useState<TicketStatus>(ticket?.status ?? initialStatus)
+  const [status, setStatus]         = useState<TicketStatus>(ticket?.status ?? initialStatus)
+  const [priority, setPriority]     = useState<Priority>(ticket?.priority ?? 'medium')
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!title.trim()) return
-    onSave({ title: title.trim(), description: description.trim(), status })
+    onSave({ title: title.trim(), description: description.trim(), status, priority })
   }
 
   const fieldClass = 'w-full px-3 py-2 text-sm border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition'
@@ -49,18 +63,21 @@ export default function TicketModal({ ticket, initialStatus = 'todo', onSave, on
             />
           </label>
 
-          <label className="flex flex-col gap-1.5">
-            <span className="text-sm font-medium text-gray-600">Status</span>
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value as TicketStatus)}
-              className={fieldClass}
-            >
-              {STATUS_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="flex flex-col gap-1.5">
+              <span className="text-sm font-medium text-gray-600">Status</span>
+              <select value={status} onChange={(e) => setStatus(e.target.value as TicketStatus)} className={fieldClass}>
+                {STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </label>
+
+            <label className="flex flex-col gap-1.5">
+              <span className="text-sm font-medium text-gray-600">Priority</span>
+              <select value={priority} onChange={(e) => setPriority(e.target.value as Priority)} className={fieldClass}>
+                {PRIORITY_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </label>
+          </div>
 
           <label className="flex flex-col gap-1.5">
             <span className="text-sm font-medium text-gray-600">Description</span>

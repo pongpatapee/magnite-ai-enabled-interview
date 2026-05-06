@@ -1,9 +1,15 @@
-import type { Ticket, TicketStatus } from '../types'
+import type { Ticket, TicketStatus, Priority } from '../types'
 
 const STATUS_BADGE: Record<TicketStatus, { label: string; className: string }> = {
   todo:        { label: 'Todo',        className: 'bg-slate-100 text-slate-600' },
   in_progress: { label: 'In Progress', className: 'bg-amber-100 text-amber-700' },
   done:        { label: 'Done',        className: 'bg-green-100 text-green-700' },
+}
+
+const PRIORITY_BADGE: Record<Priority, { label: string; className: string }> = {
+  low:    { label: 'Low',    className: 'bg-slate-100 text-slate-500' },
+  medium: { label: 'Medium', className: 'bg-amber-100 text-amber-600' },
+  high:   { label: 'High',   className: 'bg-red-100 text-red-600' },
 }
 
 interface Props {
@@ -27,12 +33,14 @@ export default function ListView({ tickets, onCardClick }: Props) {
           <tr className="border-b border-gray-100 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
             <th className="px-5 py-3">Title</th>
             <th className="px-5 py-3">Status</th>
+            <th className="px-5 py-3">Priority</th>
             <th className="px-5 py-3 hidden md:table-cell">Description</th>
           </tr>
         </thead>
         <tbody>
           {tickets.map((ticket) => {
-            const badge = STATUS_BADGE[ticket.status]
+            const status = STATUS_BADGE[ticket.status]
+            const priority = PRIORITY_BADGE[ticket.priority]
             return (
               <tr
                 key={ticket.id}
@@ -41,8 +49,13 @@ export default function ListView({ tickets, onCardClick }: Props) {
               >
                 <td className="px-5 py-3 font-medium text-gray-800">{ticket.title}</td>
                 <td className="px-5 py-3">
-                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${badge.className}`}>
-                    {badge.label}
+                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${status.className}`}>
+                    {status.label}
+                  </span>
+                </td>
+                <td className="px-5 py-3">
+                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${priority.className}`}>
+                    {priority.label}
                   </span>
                 </td>
                 <td className="px-5 py-3 text-gray-400 hidden md:table-cell max-w-xs truncate">

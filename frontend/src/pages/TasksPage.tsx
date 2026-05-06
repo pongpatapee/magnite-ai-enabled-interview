@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { DragDropContext, type DropResult } from '@hello-pangea/dnd'
-import type { Ticket, TicketStatus } from '../types'
+import type { Ticket, TicketStatus, Priority } from '../types'
 import { getTickets, createTicket, updateTicket, deleteTicket } from '../api/tickets'
 import BoardView from '../components/BoardView'
 import ListView from '../components/ListView'
@@ -29,13 +29,13 @@ export default function TasksPage() {
     await updateTicket(draggableId, { status: newStatus })
   }
 
-  async function handleCreate(data: { title: string; description: string; status: TicketStatus }) {
+  async function handleCreate(data: { title: string; description: string; status: TicketStatus; priority: Priority }) {
     const ticket = await createTicket(data)
     setTickets((prev) => [...prev, ticket])
     setCreateStatus(null)
   }
 
-  async function handleUpdate(data: { title: string; description: string; status: TicketStatus }) {
+  async function handleUpdate(data: { title: string; description: string; status: TicketStatus; priority: Priority }) {
     if (!editing) return
     const updated = await updateTicket(editing.id, data)
     setTickets((prev) => prev.map((t) => (t.id === updated.id ? updated : t)))
