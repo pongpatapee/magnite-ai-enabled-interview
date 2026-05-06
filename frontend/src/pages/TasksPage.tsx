@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react'
 import { DragDropContext, type DropResult } from '@hello-pangea/dnd'
 import type { Ticket, TicketStatus } from '../types'
 import { getTickets, createTicket, updateTicket, deleteTicket } from '../api/tickets'
-import Column from '../components/Column'
+import BoardView from '../components/BoardView'
+import ListView from '../components/ListView'
 import TicketModal from '../components/TicketModal'
 
-const STATUSES: TicketStatus[] = ['todo', 'in_progress', 'done']
+type View = 'board' | 'list'
 
-export default function Board() {
+export default function TasksPage() {
   const [tickets, setTickets] = useState<Ticket[]>([])
+  const [view, setView] = useState<View>('board')
   const [createStatus, setCreateStatus] = useState<TicketStatus | null>(null)
   const [editing, setEditing] = useState<Ticket | null>(null)
 
@@ -48,21 +50,45 @@ export default function Board() {
   }
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="min-h-screen bg-gray-50 p-8">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-6">Board</h1>
-        <div className="flex gap-4 items-start">
-          {STATUSES.map((status) => (
-            <Column
-              key={status}
-              status={status}
-              tickets={tickets.filter((t) => t.status === status)}
-              onAddClick={(s) => setCreateStatus(s)}
-              onCardClick={(ticket) => setEditing(ticket)}
-            />
-          ))}
+    <div className="min-h-screen bg-gray-50">
+      <header className="flex items-center justify-between px-8 py-4 bg-white border-b border-gray-200">
+        <h1 className="text-xl font-semibold text-gray-900">Task Board</h1>
+        <div className="flex items-center gap-2">
+          <div className="flex rounded-lg border border-gray-200 overflow-hidden text-sm font-medium">
+            {(['board', 'list'] as View[]).map((v) => (
+              <button
+                key={v}
+                onClick={() => setView(v)}
+                className={`px-4 py-1.5 capitalize transition-colors ${
+                  view === v ? 'bg-violet-500 text-white' : 'text-gray-500 hover:bg-gray-50'
+                }`}
+              >
+                {v}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => setCreateStatus('todo')}
+            className="px-3.5 py-1.5 text-sm font-medium text-white bg-violet-500 rounded-lg hover:bg-violet-600 transition-colors"
+          >
+            + New
+          </button>
         </div>
-      </div>
+      </header>
+
+      <main className="p-8">
+        {view === 'board' ? (
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <BoardView
+              tickets={tickets}
+              onAddClick={(s) => setCreateStatus(s)}
+              onCardClick={(t) => setEditing(t)}
+            />
+          </DragDropContext>
+        ) : (
+          <ListView tickets={tickets} onCardClick={(t) => setEditing(t)} />
+        )}
+      </main>
 
       {createStatus !== null && (
         <TicketModal onSave={handleCreate} onClose={() => setCreateStatus(null)} />
@@ -75,6 +101,6 @@ export default function Board() {
           onClose={() => setEditing(null)}
         />
       )}
-    </DragDropContext>
+    </div>
   )
 }

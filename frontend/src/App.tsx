@@ -1,5 +1,5 @@
-import Board from './pages/Board'
+import TasksPage from './pages/TasksPage'
 
 export default function App() {
-  return <Board />
+  return <TasksPage />
 }

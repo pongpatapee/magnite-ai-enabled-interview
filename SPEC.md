@@ -1,6 +1,6 @@
 # Spec: Barebones Task Manager
 
-Kanban board with drag-and-drop. No auth, no DB.
+Kanban board with drag-and-drop + list view. No auth, no DB.
 
 ---
 
@@ -32,11 +32,15 @@ Store: module-level `dict[str, Ticket]`.
 ### Component tree
 
 ```
-Board (page)
-├── Column × 3  (Todo / In Progress / Done)
-│   ├── TicketCard × n   — draggable; click → opens modal
-│   └── "+ Add" button   — opens modal (create mode)
-└── TicketModal          — create / edit form + Delete button
+App (view toggle: board | list)
+├── BoardView
+│   ├── Column × 3  (Todo / In Progress / Done)
+│   │   ├── TicketCard × n   — draggable; click → opens modal
+│   │   └── "+ Add" button   — opens modal (create mode)
+│   └── TicketModal          — create / edit form + Delete button
+└── ListView
+    ├── TicketRow × n        — click → opens modal
+    └── TicketModal          — shared create / edit form + Delete button
 ```
 
 ### Files
@@ -45,14 +49,19 @@ Board (page)
 |------|----------------|
 | `src/api/tickets.ts` | axios CRUD calls |
 | `src/types/index.ts` | `Ticket` type |
-| `src/pages/Board.tsx` | fetch tickets, DnD context, 3 columns |
+| `src/pages/App.tsx` | fetch tickets, view toggle, shared modal state |
+| `src/components/BoardView.tsx` | DnD context + 3 columns |
 | `src/components/Column.tsx` | droppable column |
 | `src/components/TicketCard.tsx` | draggable card |
+| `src/components/ListView.tsx` | table of all tickets, sortable by status |
 | `src/components/TicketModal.tsx` | create/edit/delete modal |
 
 ### Behaviour
 
-- On drag-drop: call `PUT /api/tickets/{id}` with new status immediately.
+- View toggle (Board / List) in header — persists selected view.
+- Board: drag-drop calls `PUT /api/tickets/{id}` with new status, optimistic update.
+- List: shows all tickets in a table with status badge; click row → edit modal.
+- Modal shared across both views — create, edit, delete.
 - Modal opens empty for create, pre-filled for edit.
 - Delete button in modal calls `DELETE` then closes.
 
@@ -79,6 +88,12 @@ End state: drag cards between columns to change status.
 
 - **Frontend only:** install `@hello-pangea/dnd`, wrap `Board` in `DragDropContext`, `Column` → `Droppable`, `TicketCard` → `Draggable`
 - **Wire-up:** `onDragEnd` → `PUT /api/tickets/{id}` with new status → optimistic state update
+
+### Phase 4 — List view
+End state: toggle between Kanban board and a flat list of all tickets.
+
+- **Frontend only:** `ListView` component (table with title, status badge, description), view toggle in header, lift shared state/handlers to `App.tsx`, extract `BoardView.tsx`
+- **Wire-up:** same CRUD handlers reused; list row click → edit modal
 
 ---
 
