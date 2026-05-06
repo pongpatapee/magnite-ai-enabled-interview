@@ -62,7 +62,8 @@ App (view toggle: board | list)
 - Board: drag-drop calls `PUT /api/tickets/{id}` with new status, optimistic update.
 - List: shows all tickets in a table with status badge; click row → edit modal.
 - Modal shared across both views — create, edit, delete.
-- Modal opens empty for create, pre-filled for edit.
+- Modal opens empty for create (status defaults to column's status), pre-filled for edit.
+- Modal includes a status dropdown — user can change status on create or edit.
 - Delete button in modal calls `DELETE` then closes.
 
 ---

@@ -29,13 +29,13 @@ export default function TasksPage() {
     await updateTicket(draggableId, { status: newStatus })
   }
 
-  async function handleCreate(data: { title: string; description: string }) {
-    const ticket = await createTicket({ ...data, status: createStatus ?? 'todo' })
+  async function handleCreate(data: { title: string; description: string; status: TicketStatus }) {
+    const ticket = await createTicket(data)
     setTickets((prev) => [...prev, ticket])
     setCreateStatus(null)
   }
 
-  async function handleUpdate(data: { title: string; description: string }) {
+  async function handleUpdate(data: { title: string; description: string; status: TicketStatus }) {
     if (!editing) return
     const updated = await updateTicket(editing.id, data)
     setTickets((prev) => prev.map((t) => (t.id === updated.id ? updated : t)))
@@ -91,7 +91,7 @@ export default function TasksPage() {
       </main>
 
       {createStatus !== null && (
-        <TicketModal onSave={handleCreate} onClose={() => setCreateStatus(null)} />
+        <TicketModal initialStatus={createStatus} onSave={handleCreate} onClose={() => setCreateStatus(null)} />
       )}
       {editing && (
         <TicketModal

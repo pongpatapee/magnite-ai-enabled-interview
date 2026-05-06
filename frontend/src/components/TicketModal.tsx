@@ -1,22 +1,32 @@
 import { useState } from 'react'
-import type { Ticket } from '../types'
+import type { Ticket, TicketStatus } from '../types'
+
+const STATUS_OPTIONS: { value: TicketStatus; label: string }[] = [
+  { value: 'todo',        label: 'Todo' },
+  { value: 'in_progress', label: 'In Progress' },
+  { value: 'done',        label: 'Done' },
+]
 
 interface Props {
   ticket?: Ticket
-  onSave: (data: { title: string; description: string }) => void
+  initialStatus?: TicketStatus
+  onSave: (data: { title: string; description: string; status: TicketStatus }) => void
   onDelete?: () => void
   onClose: () => void
 }
 
-export default function TicketModal({ ticket, onSave, onDelete, onClose }: Props) {
+export default function TicketModal({ ticket, initialStatus = 'todo', onSave, onDelete, onClose }: Props) {
   const [title, setTitle] = useState(ticket?.title ?? '')
   const [description, setDescription] = useState(ticket?.description ?? '')
+  const [status, setStatus] = useState<TicketStatus>(ticket?.status ?? initialStatus)
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!title.trim()) return
-    onSave({ title: title.trim(), description: description.trim() })
+    onSave({ title: title.trim(), description: description.trim(), status })
   }
+
+  const fieldClass = 'w-full px-3 py-2 text-sm border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition'
 
   return (
     <div
@@ -35,8 +45,21 @@ export default function TicketModal({ ticket, onSave, onDelete, onClose }: Props
               autoFocus
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition"
+              className={fieldClass}
             />
+          </label>
+
+          <label className="flex flex-col gap-1.5">
+            <span className="text-sm font-medium text-gray-600">Status</span>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as TicketStatus)}
+              className={fieldClass}
+            >
+              {STATUS_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
           </label>
 
           <label className="flex flex-col gap-1.5">
@@ -45,7 +68,7 @@ export default function TicketModal({ ticket, onSave, onDelete, onClose }: Props
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition resize-none"
+              className={`${fieldClass} resize-none`}
             />
           </label>
 
