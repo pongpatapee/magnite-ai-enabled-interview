@@ -1,5 +1,7 @@
 import uuid
 
+from typing import Literal
+
 from store.ticket_store import TicketStore
 from schemas.ticket import Ticket
 
@@ -15,3 +17,25 @@ class TicketService:
         ticket = Ticket(id=str(uuid.uuid4()), title=title, description=description, status="todo")
         self._store.add(ticket)
         return ticket
+
+    def update_ticket(
+        self,
+        ticket_id: str,
+        title: str | None = None,
+        description: str | None = None,
+        status: Literal["todo", "in_progress", "done"] | None = None,
+    ) -> Ticket:
+        existing = self._store.get(ticket_id)
+        if existing is None:
+            raise ValueError(f"Ticket {ticket_id} not found")
+        updated = existing.model_copy(update={
+            k: v for k, v in {"title": title, "description": description, "status": status}.items()
+            if v is not None
+        })
+        self._store.add(updated)
+        return updated
+
+    def delete_ticket(self, ticket_id: str) -> None:
+        if self._store.get(ticket_id) is None:
+            raise ValueError(f"Ticket {ticket_id} not found")
+        self._store.remove(ticket_id)

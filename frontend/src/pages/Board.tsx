@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { Ticket, TicketStatus } from '../types'
-import { getTickets, createTicket } from '../api/tickets'
+import { getTickets, createTicket, updateTicket, deleteTicket } from '../api/tickets'
 import Column from '../components/Column'
 import TicketModal from '../components/TicketModal'
 
@@ -8,7 +8,8 @@ const STATUSES: TicketStatus[] = ['todo', 'in_progress', 'done']
 
 export default function Board() {
   const [tickets, setTickets] = useState<Ticket[]>([])
-  const [showModal, setShowModal] = useState(false)
+  const [showCreate, setShowCreate] = useState(false)
+  const [editing, setEditing] = useState<Ticket | null>(null)
 
   useEffect(() => {
     getTickets().then(setTickets)
@@ -17,7 +18,21 @@ export default function Board() {
   async function handleCreate(data: { title: string; description: string }) {
     const ticket = await createTicket(data)
     setTickets((prev) => [...prev, ticket])
-    setShowModal(false)
+    setShowCreate(false)
+  }
+
+  async function handleUpdate(data: { title: string; description: string }) {
+    if (!editing) return
+    const updated = await updateTicket(editing.id, data)
+    setTickets((prev) => prev.map((t) => (t.id === updated.id ? updated : t)))
+    setEditing(null)
+  }
+
+  async function handleDelete() {
+    if (!editing) return
+    await deleteTicket(editing.id)
+    setTickets((prev) => prev.filter((t) => t.id !== editing.id))
+    setEditing(null)
   }
 
   return (
@@ -29,15 +44,23 @@ export default function Board() {
             key={status}
             status={status}
             tickets={tickets.filter((t) => t.status === status)}
-            onAddClick={() => setShowModal(true)}
-            onCardClick={() => {}}
+            onAddClick={() => setShowCreate(true)}
+            onCardClick={(ticket) => setEditing(ticket)}
           />
         ))}
       </div>
-      {showModal && (
+      {showCreate && (
         <TicketModal
           onSave={handleCreate}
-          onClose={() => setShowModal(false)}
+          onClose={() => setShowCreate(false)}
+        />
+      )}
+      {editing && (
+        <TicketModal
+          ticket={editing}
+          onSave={handleUpdate}
+          onDelete={handleDelete}
+          onClose={() => setEditing(null)}
         />
       )}
     </div>

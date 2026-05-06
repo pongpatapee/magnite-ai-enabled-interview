@@ -11,3 +11,9 @@ export interface CreateTicketRequest {
   title: string
   description: string
 }
+
+export interface UpdateTicketRequest {
+  title?: string
+  description?: string
+  status?: TicketStatus
+}
