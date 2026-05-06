@@ -14,7 +14,7 @@ def list_tickets(service: TicketService = Depends(get_ticket_service)):
 
 @router.post("", response_model=Ticket, status_code=201)
 def create_ticket(body: CreateTicketRequest, service: TicketService = Depends(get_ticket_service)):
-    return service.create_ticket(title=body.title, description=body.description)
+    return service.create_ticket(title=body.title, description=body.description, status=body.status)
 
 
 @router.put("/{ticket_id}", response_model=Ticket)

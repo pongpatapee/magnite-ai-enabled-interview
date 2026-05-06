@@ -8,7 +8,7 @@ const STATUSES: TicketStatus[] = ['todo', 'in_progress', 'done']
 
 export default function Board() {
   const [tickets, setTickets] = useState<Ticket[]>([])
-  const [showCreate, setShowCreate] = useState(false)
+  const [createStatus, setCreateStatus] = useState<TicketStatus | null>(null)
   const [editing, setEditing] = useState<Ticket | null>(null)
 
   useEffect(() => {
@@ -16,9 +16,9 @@ export default function Board() {
   }, [])
 
   async function handleCreate(data: { title: string; description: string }) {
-    const ticket = await createTicket(data)
+    const ticket = await createTicket({ ...data, status: createStatus ?? 'todo' })
     setTickets((prev) => [...prev, ticket])
-    setShowCreate(false)
+    setCreateStatus(null)
   }
 
   async function handleUpdate(data: { title: string; description: string }) {
@@ -44,15 +44,15 @@ export default function Board() {
             key={status}
             status={status}
             tickets={tickets.filter((t) => t.status === status)}
-            onAddClick={() => setShowCreate(true)}
+            onAddClick={(s) => setCreateStatus(s)}
             onCardClick={(ticket) => setEditing(ticket)}
           />
         ))}
       </div>
-      {showCreate && (
+      {createStatus !== null && (
         <TicketModal
           onSave={handleCreate}
-          onClose={() => setShowCreate(false)}
+          onClose={() => setCreateStatus(null)}
         />
       )}
       {editing && (

@@ -13,8 +13,8 @@ class TicketService:
     def list_tickets(self) -> list[Ticket]:
         return self._store.get_all()
 
-    def create_ticket(self, title: str, description: str) -> Ticket:
-        ticket = Ticket(id=str(uuid.uuid4()), title=title, description=description, status="todo")
+    def create_ticket(self, title: str, description: str, status: Literal["todo", "in_progress", "done"] = "todo") -> Ticket:
+        ticket = Ticket(id=str(uuid.uuid4()), title=title, description=description, status=status)
         self._store.add(ticket)
         return ticket
 

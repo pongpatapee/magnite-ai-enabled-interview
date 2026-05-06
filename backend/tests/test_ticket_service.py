@@ -20,6 +20,12 @@ def test_create_ticket_returns_ticket_with_correct_fields():
     assert ticket.id != ""
 
 
+def test_create_ticket_uses_given_status():
+    service = make_service()
+    ticket = service.create_ticket(title="T", description="", status="in_progress")
+    assert ticket.status == "in_progress"
+
+
 def test_create_ticket_assigns_unique_ids():
     service = make_service()
     t1 = service.create_ticket(title="A", description="")

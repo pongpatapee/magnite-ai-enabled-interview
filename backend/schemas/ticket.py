@@ -12,6 +12,7 @@ class Ticket(BaseModel):
 class CreateTicketRequest(BaseModel):
     title: str
     description: str
+    status: Literal["todo", "in_progress", "done"] = "todo"
 
 
 class UpdateTicketRequest(BaseModel):

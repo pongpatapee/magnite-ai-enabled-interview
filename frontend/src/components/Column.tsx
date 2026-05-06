@@ -10,7 +10,7 @@ const LABELS: Record<TicketStatus, string> = {
 interface Props {
   status: TicketStatus
   tickets: Ticket[]
-  onAddClick: () => void
+  onAddClick: (status: TicketStatus) => void
   onCardClick: (ticket: Ticket) => void
 }
 
@@ -24,7 +24,7 @@ export default function Column({ status, tickets, onAddClick, onCardClick }: Pro
         ))}
       </div>
       <button
-        onClick={onAddClick}
+        onClick={() => onAddClick(status)}
         style={{ marginTop: 8, width: '100%', padding: '6px 0', cursor: 'pointer', border: '1px dashed #aaa', borderRadius: 4, background: 'transparent', color: '#555' }}
       >
         + Add ticket
