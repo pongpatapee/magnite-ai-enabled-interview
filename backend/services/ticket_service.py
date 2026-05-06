@@ -1,9 +1,7 @@
 import uuid
 
-from typing import Literal
-
 from store.ticket_store import TicketStore
-from schemas.ticket import Ticket
+from schemas.ticket import Ticket, TicketStatus
 
 
 class TicketService:
@@ -13,7 +11,7 @@ class TicketService:
     def list_tickets(self) -> list[Ticket]:
         return self._store.get_all()
 
-    def create_ticket(self, title: str, description: str, status: Literal["todo", "in_progress", "done"] = "todo") -> Ticket:
+    def create_ticket(self, title: str, description: str, status: TicketStatus = TicketStatus.TODO) -> Ticket:
         ticket = Ticket(id=str(uuid.uuid4()), title=title, description=description, status=status)
         self._store.add(ticket)
         return ticket
@@ -23,7 +21,7 @@ class TicketService:
         ticket_id: str,
         title: str | None = None,
         description: str | None = None,
-        status: Literal["todo", "in_progress", "done"] | None = None,
+        status: TicketStatus | None = None,
     ) -> Ticket:
         existing = self._store.get(ticket_id)
         if existing is None:
