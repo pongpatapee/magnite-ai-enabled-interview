@@ -1,0 +1,86 @@
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Python / FastAPI ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Testing / coverage / typecheck / linters
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.log
+
+# --- Environment & secrets ---
+.env
+.env.*
+!.env.example
+
+# --- Node / React ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Production / bundler output
+build/
+dist/
+out/
+
+# Vite / env overrides (keep .env.example tracked via rule above)
+.env*.local
+
+# Optional: Storybook
+storybook-static/
+
+# Testing (frontend)
+coverage/
+.nyc_output/
+
+# --- IDEs ---
+.idea/
+*.swp
+*.swo
+*~
+
+# VS Code: keep shared settings optional (uncomment to ignore all)
+# .vscode/
