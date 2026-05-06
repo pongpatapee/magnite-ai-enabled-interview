@@ -2,10 +2,10 @@ import { Droppable } from '@hello-pangea/dnd'
 import type { Ticket, TicketStatus } from '../types'
 import TicketCard from './TicketCard'
 
-const META: Record<TicketStatus, { label: string; accent: string; dot: string }> = {
-  todo:        { label: 'Todo',        accent: '#e8eaed', dot: '#94a3b8' },
-  in_progress: { label: 'In Progress', accent: '#fef3c7', dot: '#f59e0b' },
-  done:        { label: 'Done',        accent: '#dcfce7', dot: '#22c55e' },
+const META: Record<TicketStatus, { label: string; dotClass: string; badgeClass: string }> = {
+  todo:        { label: 'Todo',        dotClass: 'bg-slate-400',  badgeClass: 'bg-slate-100 text-slate-600' },
+  in_progress: { label: 'In Progress', dotClass: 'bg-amber-400',  badgeClass: 'bg-amber-100 text-amber-700' },
+  done:        { label: 'Done',        dotClass: 'bg-green-400',  badgeClass: 'bg-green-100 text-green-700' },
 }
 
 interface Props {
@@ -16,23 +16,15 @@ interface Props {
 }
 
 export default function Column({ status, tickets, onAddClick, onCardClick }: Props) {
-  const { label, accent, dot } = META[status]
+  const { label, dotClass, badgeClass } = META[status]
+
   return (
-    <div style={{ flex: 1, minWidth: 260, maxWidth: 340, display: 'flex', flexDirection: 'column' }}>
+    <div className="flex flex-col flex-1 min-w-60 max-w-80">
       {/* Header */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12,
-        padding: '0 4px',
-      }}>
-        <span style={{ width: 10, height: 10, borderRadius: '50%', background: dot, flexShrink: 0 }} />
-        <span style={{ fontWeight: 600, fontSize: 14, color: 'var(--text-h)', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
-          {label}
-        </span>
-        <span style={{
-          marginLeft: 'auto', fontSize: 12, fontWeight: 600,
-          background: accent, color: 'var(--text-h)',
-          borderRadius: 12, padding: '1px 8px',
-        }}>
+      <div className="flex items-center gap-2 mb-3 px-1">
+        <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${dotClass}`} />
+        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{label}</span>
+        <span className={`ml-auto text-xs font-semibold rounded-full px-2 py-0.5 ${badgeClass}`}>
           {tickets.length}
         </span>
       </div>
@@ -43,15 +35,9 @@ export default function Column({ status, tickets, onAddClick, onCardClick }: Pro
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            style={{
-              flex: 1,
-              minHeight: 80,
-              borderRadius: 10,
-              padding: 8,
-              background: snapshot.isDraggingOver ? accent : 'var(--code-bg)',
-              border: `2px dashed ${snapshot.isDraggingOver ? dot : 'transparent'}`,
-              transition: 'background 0.15s, border-color 0.15s',
-            }}
+            className={`flex-1 min-h-20 rounded-xl p-2 transition-colors duration-150 ${
+              snapshot.isDraggingOver ? 'bg-violet-50 ring-2 ring-violet-200' : 'bg-gray-100'
+            }`}
           >
             {tickets.map((t, i) => (
               <TicketCard key={t.id} ticket={t} index={i} onClick={onCardClick} />
@@ -64,15 +50,7 @@ export default function Column({ status, tickets, onAddClick, onCardClick }: Pro
       {/* Add button */}
       <button
         onClick={() => onAddClick(status)}
-        style={{
-          marginTop: 8, width: '100%', padding: '7px 0',
-          cursor: 'pointer', border: '1px dashed var(--border)',
-          borderRadius: 8, background: 'transparent',
-          color: 'var(--text)', fontSize: 13, fontWeight: 500,
-          transition: 'border-color 0.15s, color 0.15s',
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.borderColor = dot; e.currentTarget.style.color = 'var(--text-h)' }}
-        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text)' }}
+        className="mt-2 w-full py-2 text-sm font-medium text-gray-400 border border-dashed border-gray-300 rounded-lg hover:border-gray-400 hover:text-gray-600 transition-colors duration-150"
       >
         + Add ticket
       </button>

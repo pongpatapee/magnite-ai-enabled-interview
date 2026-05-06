@@ -49,11 +49,9 @@ export default function Board() {
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div style={{ padding: '24px 32px', minHeight: '100vh', background: 'var(--bg)' }}>
-        <h1 style={{ fontSize: 28, fontWeight: 600, letterSpacing: '-0.5px', margin: '0 0 24px', color: 'var(--text-h)' }}>
-          Board
-        </h1>
-        <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+      <div className="min-h-screen bg-gray-50 p-8">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-6">Board</h1>
+        <div className="flex gap-4 items-start">
           {STATUSES.map((status) => (
             <Column
               key={status}
@@ -64,21 +62,19 @@ export default function Board() {
             />
           ))}
         </div>
-        {createStatus !== null && (
-          <TicketModal
-            onSave={handleCreate}
-            onClose={() => setCreateStatus(null)}
-          />
-        )}
-        {editing && (
-          <TicketModal
-            ticket={editing}
-            onSave={handleUpdate}
-            onDelete={handleDelete}
-            onClose={() => setEditing(null)}
-          />
-        )}
       </div>
+
+      {createStatus !== null && (
+        <TicketModal onSave={handleCreate} onClose={() => setCreateStatus(null)} />
+      )}
+      {editing && (
+        <TicketModal
+          ticket={editing}
+          onSave={handleUpdate}
+          onDelete={handleDelete}
+          onClose={() => setEditing(null)}
+        />
+      )}
     </DragDropContext>
   )
 }

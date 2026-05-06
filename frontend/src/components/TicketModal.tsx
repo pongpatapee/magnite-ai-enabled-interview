@@ -18,99 +18,60 @@ export default function TicketModal({ ticket, onSave, onDelete, onClose }: Props
     onSave({ title: title.trim(), description: description.trim() })
   }
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '8px 10px',
-    border: '1px solid var(--border)', borderRadius: 6,
-    background: 'var(--bg)', color: 'var(--text-h)',
-    fontSize: 14, outline: 'none',
-    transition: 'border-color 0.15s',
-  }
-
   return (
     <div
-      style={{
-        position: 'fixed', inset: 0, zIndex: 100,
-        background: 'rgba(0,0,0,0.45)',
-        backdropFilter: 'blur(2px)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div style={{
-        background: 'var(--bg)', borderRadius: 12,
-        padding: '28px 28px 24px',
-        width: 440, maxWidth: 'calc(100vw - 32px)',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
-        border: '1px solid var(--border)',
-      }}>
-        <h2 style={{ margin: '0 0 20px', fontSize: 18, fontWeight: 600, color: 'var(--text-h)' }}>
+      <div className="bg-white rounded-xl shadow-2xl border border-gray-200 w-[440px] max-w-[calc(100vw-2rem)] p-7">
+        <h2 className="text-lg font-semibold text-gray-900 mb-5">
           {ticket ? 'Edit Ticket' : 'New Ticket'}
         </h2>
 
-        <form onSubmit={handleSubmit}>
-          <label style={{ display: 'block', marginBottom: 14 }}>
-            <span style={{ display: 'block', marginBottom: 5, fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>
-              Title
-            </span>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <label className="flex flex-col gap-1.5">
+            <span className="text-sm font-medium text-gray-600">Title</span>
             <input
               autoFocus
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              style={inputStyle}
-              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent)' }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)' }}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition"
             />
           </label>
 
-          <label style={{ display: 'block', marginBottom: 20 }}>
-            <span style={{ display: 'block', marginBottom: 5, fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>
-              Description
-            </span>
+          <label className="flex flex-col gap-1.5">
+            <span className="text-sm font-medium text-gray-600">Description</span>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent)' }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)' }}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition resize-none"
             />
           </label>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="flex items-center justify-between mt-1">
             {onDelete ? (
               <button
                 type="button"
                 onClick={onDelete}
-                style={{
-                  padding: '7px 14px', borderRadius: 6, fontSize: 13, cursor: 'pointer',
-                  border: '1px solid #fca5a5', background: '#fff1f2', color: '#dc2626',
-                  fontWeight: 500,
-                }}
+                className="px-3.5 py-1.5 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition"
               >
                 Delete
               </button>
             ) : <span />}
 
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div className="flex gap-2">
               <button
                 type="button"
                 onClick={onClose}
-                style={{
-                  padding: '7px 16px', borderRadius: 6, fontSize: 13, cursor: 'pointer',
-                  border: '1px solid var(--border)', background: 'transparent',
-                  color: 'var(--text)', fontWeight: 500,
-                }}
+                className="px-3.5 py-1.5 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={!title.trim()}
-                style={{
-                  padding: '7px 16px', borderRadius: 6, fontSize: 13, cursor: 'pointer',
-                  border: 'none', background: 'var(--accent)', color: '#fff',
-                  fontWeight: 500, opacity: title.trim() ? 1 : 0.5,
-                }}
+                className="px-3.5 py-1.5 text-sm font-medium text-white bg-violet-500 rounded-lg hover:bg-violet-600 disabled:opacity-40 disabled:cursor-not-allowed transition"
               >
                 Save
               </button>
