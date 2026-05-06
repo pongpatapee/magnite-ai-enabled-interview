@@ -10,6 +10,7 @@ export interface Ticket {
 export interface CreateTicketRequest {
   title: string
   description: string
+  status: TicketStatus
 }
 
 export interface UpdateTicketRequest {

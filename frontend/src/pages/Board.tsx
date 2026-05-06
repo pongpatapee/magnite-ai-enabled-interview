@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { DragDropContext, type DropResult } from '@hello-pangea/dnd'
 import type { Ticket, TicketStatus } from '../types'
 import { getTickets, createTicket, updateTicket, deleteTicket } from '../api/tickets'
 import Column from '../components/Column'
@@ -14,6 +15,17 @@ export default function Board() {
   useEffect(() => {
     getTickets().then(setTickets)
   }, [])
+
+  async function handleDragEnd(result: DropResult) {
+    if (!result.destination) return
+    const { draggableId, destination } = result
+    const newStatus = destination.droppableId as TicketStatus
+    const ticket = tickets.find((t) => t.id === draggableId)
+    if (!ticket || ticket.status === newStatus) return
+
+    setTickets((prev) => prev.map((t) => (t.id === draggableId ? { ...t, status: newStatus } : t)))
+    await updateTicket(draggableId, { status: newStatus })
+  }
 
   async function handleCreate(data: { title: string; description: string }) {
     const ticket = await createTicket({ ...data, status: createStatus ?? 'todo' })
@@ -36,33 +48,35 @@ export default function Board() {
   }
 
   return (
-    <div style={{ padding: 24 }}>
-      <h1 style={{ marginTop: 0 }}>Board</h1>
-      <div style={{ display: 'flex', gap: 16 }}>
-        {STATUSES.map((status) => (
-          <Column
-            key={status}
-            status={status}
-            tickets={tickets.filter((t) => t.status === status)}
-            onAddClick={(s) => setCreateStatus(s)}
-            onCardClick={(ticket) => setEditing(ticket)}
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <div style={{ padding: 24 }}>
+        <h1 style={{ marginTop: 0 }}>Board</h1>
+        <div style={{ display: 'flex', gap: 16 }}>
+          {STATUSES.map((status) => (
+            <Column
+              key={status}
+              status={status}
+              tickets={tickets.filter((t) => t.status === status)}
+              onAddClick={(s) => setCreateStatus(s)}
+              onCardClick={(ticket) => setEditing(ticket)}
+            />
+          ))}
+        </div>
+        {createStatus !== null && (
+          <TicketModal
+            onSave={handleCreate}
+            onClose={() => setCreateStatus(null)}
           />
-        ))}
+        )}
+        {editing && (
+          <TicketModal
+            ticket={editing}
+            onSave={handleUpdate}
+            onDelete={handleDelete}
+            onClose={() => setEditing(null)}
+          />
+        )}
       </div>
-      {createStatus !== null && (
-        <TicketModal
-          onSave={handleCreate}
-          onClose={() => setCreateStatus(null)}
-        />
-      )}
-      {editing && (
-        <TicketModal
-          ticket={editing}
-          onSave={handleUpdate}
-          onDelete={handleDelete}
-          onClose={() => setEditing(null)}
-        />
-      )}
-    </div>
+    </DragDropContext>
   )
 }
